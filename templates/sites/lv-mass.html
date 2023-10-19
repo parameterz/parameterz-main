@@ -1,0 +1,23 @@
+{% set page = {'title': 'news page title', 'description': 'news page description'}%}
+{% extends "default.html" %}
+{% block content %}
+<div class="grid">
+<div class="unit whole">
+<article>
+  <h1>Left Ventricular M-Mode and Mass Z-Scores</h1>
+{% filter markdown %} 
+Description here.
+{% endfilter %}
+<form id="ref-data-form" action="/calc/echo/" method="get">
+  {% include "/includes/patient-all.html"%}
+  {% include "/includes/ref-inputs.html" %}
+  <div class="grid">
+    <div class="unit center-on-mobiles"">
+    <input type="submit" value="Calculate" />
+    </div>
+  </div>
+</form>
+</article>
+</div>
+</div>
+{% endblock %}

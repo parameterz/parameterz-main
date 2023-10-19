@@ -1,0 +1,207 @@
+{% extends "tools/base.html" %}
+
+{% block article %}
+
+{% filter markdown %}
+The January 2008 issue of JASE includes the article:
+[Routine Adjustment of Doppler Echocardiographically Derived Aortic Valve Area Using a Previously Derived Equation to Account for the Effect of Pressure Recovery](http://www.ncbi.nlm.nih.gov/pubmed/17764899) 
+
+Wherein the matter of cath vs. echo discrepancies in evaluating aortic stenosis is addressed. While this article focuses on the matter of the aortic _valve area_, prior work has directed attention to the differences in _gradients_:
+[Comparison of simultaneous invasive and noninvasive measurements of pressure gradients in congenital aortic valve stenosis](http://www.ncbi.nlm.nih.gov/pubmed/12464918) 
+
+Combining the concepts of the two articles, this calculator considers both pressure recovered valve area and gradient estimations, as given by the formulae in the aforementioned articles:
+
+![pressure recovered aortic valve area formula](/static/img/AVAPressRecov3.jpg)
+
+
+![Doppler pressure recovery formula](/static/img/PressRecovFormula3.jpg)
+
+
+###Aortic Stenosis Valve Area and Pressure Recovery Calculator
+{% endfilter %}
+
+        <div class="myGadget">
+            <table class="zTable">
+                <thead>
+                <tr>
+                    <th colspan="2">Inputs</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="label">
+                        <label for="txtPRHeight">Height (cm):</label>
+                    </td>
+
+                    <td>
+                        <input id="txtPRHeight" type="text" onchange="CalcPR()" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="label">
+                        <label for="txtPRWeight">Weight (kg):</label>
+                    </td>
+
+                    <td>
+                        <input id="txtPRWeight" type="text" onchange="CalcPR()" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="label">
+                        <label for="txtPRLVOT">LVOT Diameter (cm):</label>
+                    </td>
+
+                    <td>
+                        <input id="txtPRLVOT" type="text" onchange="CalcPR()" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="label">
+                        <label for="txtPRAAO">AAO Diameter (cm):</label>
+                    </td>
+
+                    <td>
+                        <input id="txtPRAAO" type="text" onchange="CalcPR()" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="label">
+                        <label for="txtPRLVOTVTI">LVOT VTI (cm):</label>
+                    </td>
+
+                    <td>
+                        <input id="txtPRLVOTVTI" type="text" onchange="CalcPR()" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="label">
+                        <label for="txtPRAOVTI">AO VTI (cm):</label>
+                    </td>
+
+                    <td>
+                        <input id="txtPRAOVTI" type="text" onchange="CalcPR()" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="label">
+                        <label for="txtPRPeakV">AO Peak Velocity (m/sec):</label>
+                    </td>
+
+                    <td>
+                        <input id="txtPRPeakV" type="text" onchange="CalcPR()" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+
+                    <td>
+                        <input id="btnCalcPR" type="button" value="Update" onclick="CalcPR()" />
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table>
+            <thead>
+                <tr>
+                    <th colspan="2">Results</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td class="label">BSA:&nbsp;</td>
+
+                    <td id="PRBSA">&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td class="label">Aortic Valve Area (AVA):&nbsp;</td>
+
+                    <td id="PRAVA">&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td class="label">AVA Indexed to BSA:&nbsp;</td>
+
+                    <td id="PRAVAI">&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td class="label">AVA Corrected for PR:&nbsp;</td>
+
+                    <td id="PRAVAC">&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td class="label">AVA Corrected &amp; Indexed:&nbsp;</td>
+
+                    <td id="PRAVAIC">&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td class="label">Peak Instantaneous Gradient:&nbsp;</td>
+
+                    <td id="PRPIG">&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td class="label">Pressure Recovery:&nbsp;</td>
+
+                    <td id="PRPR">&nbsp;</td>
+                </tr>
+
+                <tr>
+                    <td class="label">Net Gradient:&nbsp;</td>
+
+                    <td id="PRNet">&nbsp;</td>
+                </tr>
+            </tbody>
+            </table>
+
+        </div>
+
+<script>
+    function CalcPR() {
+            //calculate the BSA
+            var ht = parseFloat(document.getElementById("txtPRHeight").value);
+            var wt = parseFloat(document.getElementById("txtPRWeight").value);
+            var BSA = 0.024265 * Math.pow(ht, 0.3964) * Math.pow(wt, 0.5378);
+            document.getElementById("PRBSA").innerHTML = BSA.toFixed(2) + " m<sup>2</sup>";
+
+            //calculate the AVA
+            var LVOTDiam = parseFloat(document.getElementById("txtPRLVOT").value);
+            var LVOTArea = Math.PI * Math.pow(LVOTDiam / 2, 2);
+            var LVOTVTI = parseFloat(document.getElementById("txtPRLVOTVTI").value);
+            var AOVTI = parseFloat(document.getElementById("txtPRAOVTI").value);
+            var AVA = (LVOTArea * LVOTVTI) / AOVTI;
+            var AVAI = AVA / BSA;
+            document.getElementById("PRAVA").innerHTML = AVA.toFixed(2) + " cm<sup>2</sup>";
+            document.getElementById("PRAVAI").innerHTML = AVAI.toFixed(2) + " cm<sup>2</sup>/m<sup>2</sup>";
+
+            //do the correction for pressure recovery
+            var AAODiam = parseFloat(document.getElementById("txtPRAAO").value);
+            var AAOArea = Math.PI * Math.pow((AAODiam / 2), 2);
+            var AVAC = (AAOArea * AVA) / (AAOArea - AVA);
+            var AVAIC = AVAC / BSA;
+            document.getElementById("PRAVAC").innerHTML = AVAC.toFixed(2) + " cm<sup>2</sup>";
+            document.getElementById("PRAVAIC").innerHTML = AVAIC.toFixed(2) + " cm<sup>2</sup>/m<sup>2</sup>";
+
+            //do the gradients
+            var PeakVeloc = parseFloat(document.getElementById("txtPRPeakV").value);
+            var PIG = 4 * Math.pow(PeakVeloc, 2);
+            var PR = PIG * 2 * (AVA / AAOArea) * (1 - AVA / AAOArea);
+            var PRPPSG = PIG - PR;
+            document.getElementById("PRPIG").innerHTML = Math.round(PIG) + " mmHg";
+            document.getElementById("PRPR").innerHTML = Math.round(PR) + " mmHg";
+            document.getElementById("PRNet").innerHTML = Math.round(PRPPSG) + " mmHg";
+
+        } //end main fx
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'news.html' %}
+{% block article %}
+  {% for article in articles %}
+    <article>
+    <h2><a href="/news/{{ article.url }}">{{ article.meta.date }}</a></h2>
+    <div class="post-content">{{ article.summary|markdown|safe }}</div>
+    </article>
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'default.html' %}
+{% block content %}
+<section class="docs">
+    <div class="grid">
+      {% include 'includes/tools_contents_mobile.html' %}
+      <div class="unit four-fifths">
+        <article>
+          {% block article %}{% endblock %}
+        </article>
+      </div>
+      {% include 'includes/tools_nav.html' %}
+      <div class="clear"></div>
+    </div>
+</section>
+{% endblock %}

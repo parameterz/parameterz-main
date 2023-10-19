@@ -1,0 +1,12 @@
+{% extends "default.html" %}
+{% set nav_item = "news" %}
+{% block content %}
+<section class="news">
+<div class="grid">
+<div class="unit whole">
+  {%block article %}
+  {% endblock %}
+</div>
+</div>
+</section>
+{% endblock %}

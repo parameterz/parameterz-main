@@ -1,0 +1,170 @@
+{% extends 'news.html' %}
+{% block article %}
+<article>
+<h2>Changelog</h2>
+<div class="post-content">
+{% filter markdown %}
+
+### 10 May 2019
+Adds:
+
+- [Yao et al., Mutivariable Allometric Model data for adults(!)](/refs/yao-jase-2019)
+
+### 14 Jul 2018
+Updates:
+
+- [Adds Kampmann RVAWD z-scores, previously omitted.](/refs/kampmann-heart-2000)
+
+### 01 Jun 2018
+Adds:
+
+- [Rajagopal et al., right atrial area z-scores](/refs/rajagopal-pedcard-2018)
+
+### 20 Feb 2018
+
+Corrects:
+
+- minor error when calculating mean values on the Neilan et al. LA diameter z-score calculator;
+Hat tip to Dr. G Norrish for helping me find the error. :)
+
+Updates:
+
+- [aortic valve smackdown](/tools/aortic-valve-smackdown) to include most recent data
+
+### 11 Feb 2018
+Adds:
+
+- [Cantinotti et al., Valve and artery diameter Z-scores](/refs/cantinotti-jcard-2017)
+
+### 21 Nov 2017
+Adds:
+
+- [Lopez et al., PHN Z-Scores](/refs/lopez-circimaging-2017)
+
+### 02 Aug 2017
+Adds:
+    
+- [Premie LV m-mode z-score data](/refs/choudhry-jase-2017)
+
+
+### 26 Jul 2017
+Corrects the [Premie arch z-score data](/refs/dijkema-jase-2017) as detailed [here](/news/2017/07/26/premie-arch-zscores-update).
+
+### 14 Feb 2017
+Adds:
+
+- [CMR Z-Scores](/cmr/)
+
+### 11 Feb 2017
+Adds:
+
+- [Premie arch z-score data](/refs/dijkema-jase-2017)
+
+### 19 Jan 2017
+Adds:
+
+- [Pulmonary Artery Acceleration Time Z-Scores](/refs/koestenberger-circimaging-2017)
+
+### 14 Jul 2016
+Adds:
+
+- [New coronary artery z-score data from Japan](/refs/kobayashi-jase-2016)
+- [A re-imagined coronary artery z-score "smackdown"](/tools/coronary-artery-smackdown)
+
+### 21 Apr 2016
+Adds:
+
+- [Left heart inflow and tissue Doppler z-scores](/refs/dallaire-circimaging-2015) from Dallaire et al., Feb 2015.
+
+### 22 Jan 2016
+Adds:
+
+- [Aortic Dimensions for Turner Syndrome](/refs/quezada-ajmg-2015)
+
+### 15 Apr 2015
+Adds:
+
+- [Fetal Cardiovascular Profile calculator for TTTS](/tools/chop-fetal-cv-profile)
+
+### 02 Mar 2015
+Adds:
+
+- [Aortic Valve Smackdown](/tools/aortic-valve-smackdown) "anniversary edition"
+    
+### 24 Feb 2015
+Adds:
+    
+- [Multivariable aortic root data](/refs/dallaire-pedcard-2015) from the "BMI bias" article
+    by Dallaire et al.
+    
+### 08 Feb 2015
+Adds:
+
+- [Cantinotti chamber diameter and area z-score data, JASE Dec 2014](/refs/cantinotti-jase-2014-december)
+    
+    
+### 17 Jan 2015
+Adds:
+    
+- [Jain 2014 Neonatal RV data](/refs/jain-jase-2014)
+    
+Fixes:
+    
+- link to [issue tracker](https://bitbucket.org/parameterz/main/issues)
+    
+### 02 Dec 2014
+Adds:
+
+- [Gautier 2010](/refs/gautier-ajc-2010) and [Campens 2014](/refs/campens-ajc-2014) aortic root data (vessel diameters measured in diastole)
+    
+### 29 Nov 2014
+Adds: 
+    
+- [tool for calculating ava and pressure recovery](/tools/aortic-valve-area-and-pressure-recovery), migrated from Blogger
+    
+### 20 Mar 2014
+Adds:
+
+- tool for [calculating height and weight from known BSA](/tools/bsa-ht-wt)
+- Eidem et al., [TDI z-scores](/refs/eidem-jase-2004)
+
+Fixes:
+
+-minor spelling errors
+
+### 12 Mar 2014
+Adds: RV Tissue Doppler z-scores as provided by [Koestenberger et al.](/refs/koestenberger-ajc-2012)
+
+### 16 Feb 2014
+Fixes:
+
+- css issue w/ FF
+
+adds:
+
+- constraints to sites/site pages
+
+### 15 Feb 2014
+Adds constraints/study population notice for each ref
+
+### 14 Feb 2014
+Fixes issue [#3](http://code.parameterz.com/main/issue/3/allow-comma-as-decimal-separator-when)  
+`float` fails when the string contains a comma separator. Largely a problem for international users with
+IE (browser does not respect html5 input: type="number").  
+
+Fixes issue #4  
+404's generated with incomplete AJAX url/target  
+
+### 12 Feb 2014
+Adds:
+
+* [contact form](/about#contact)
+
+### 09 Feb 2014
+added:
+
+* changelog
+{% endfilter %}
+</div>
+</article>
+{% endblock %}

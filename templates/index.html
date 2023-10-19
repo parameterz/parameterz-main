@@ -1,0 +1,120 @@
+{% extends "sites/base.html" %}
+{% block content %}
+<section class="intro">
+  <div class="grid">
+    <div class="unit whole center-on-mobiles">
+      <p class="first">
+        <span class="hide-on-mobiles">Z-Scores and Reference Values for Pediatric Echocardiography.</span>
+        <span class="show-on-mobiles">Z-Scores for Peds&nbsp;Echo</span>
+      </p>
+    </div>
+  </div>
+</section>
+<section class="features">
+  <div class="grid">
+    <div class="unit one-third">
+      <h2>Sites</h2>
+      <p>
+        View z-scores calculated by multiple references for common collections,
+        like the <a href="/sites/aortic-root">aortic root</a> and
+        <a href="/sites/coronary-arteries">coronary arteries</a>.
+      </p>
+      <a href="/sites/" class="">View the sites &rarr;</a>
+    </div>
+    <div class="unit one-third">
+      <h2>Refs</h2>
+      <p>Calculate z-scores of cardiac structures using a large collection of references,
+      from <a href="/refs/bhatla-circimaging-2012">Bhatla</a> to
+      <a href="/refs/zilberman-pedcard-2005">Zilberman</a>.</p>
+      <a href="/refs/" class="">View the refs &rarr;</a>
+    </div>
+    <div class="unit one-third">
+      <h2>PHN</h2>
+      <p>
+        The wait is over. The Pediatric Heart Network Z-Scores are here.
+      Diameters, areas, mass, and volume; there's a lot here.
+      </p>
+      <a href="/refs/lopez-circimaging-2017">Crush it.  &rarr;</a>
+    </div>
+    <div class="clear"></div>
+  </div>
+</section>
+<section class="quickstart">
+  <div class="grid">
+    <div class="unit golden-small center-on-mobiles">
+      <h4>Jump right in:</h4>
+      <p>Enter your patient demographics here; the data persits through the site.</p>
+    </div>
+    <div class="unit golden-large code">
+      <p class="title">Patient Demographics</p>
+      <div class="shell">
+          <div>
+              <label for="ht">Height (cm):</label>
+              <input type="number" class="demog" name="ht" id="ht" min=0 step="0.1" />
+              <span id="inches">...</span>
+          </div>
+          <div>
+              <label for="wt">Weight (kg):</label>
+              <input type="number" name="wt" id="wt" class="demog" min=0 step="0.1" />
+              <span id="pounds">...</span>
+          </div>
+          <div>
+              <label for="bsa">BSA (<span id="bsaMethod">'Haycock'</span>):</label>
+              <input type="text" id="bsa" class="bsa" disabled="disabled" />
+          </div>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+</section>
+<section>
+  <div class="grid">
+    <div class="unit whole">
+        <div class="unit whole center-on-mobiles">
+          <div class="pane-content">
+            <h2 class="center-on-mobiles">Need more?</h2>
+                <p><a href="/cmr/"> CMR Z-Scores &rarr;</a></p>
+                <p><a href="http://zscore.chboston.org/"> Boston Z-Scores &rarr;</a></p>
+                <p>File a feature request or report a bug:</p>
+                <a href="https://bitbucket.org/parameterz/main/issues">Issue Tracker &rarr;</a>
+          </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+  </div>
+</section>
+<script>
+  function setBSA() {
+    if ($.isNumeric($('#ht').val()) && $.isNumeric($('#wt').val())) {
+      var pt = new Patient({'ht': $('#ht').val(), 'wt': $('#wt').val()});
+      $('#bsa').val(pt.bsa('haycock').toFixed(2));
+    } else {
+      $('#bsa').val('');
+    }
+  }
+  
+  $( document ).ready(function() {
+    // change metric to english
+    $('#ht').change(function(){
+      setBSA();
+      if ($.isNumeric($(this).val())) {
+        $('#inches').html( '(' + ($(this).val()/2.54).toFixed(1) + ' inches)' );
+      } else {
+        $('#inches').html('');
+      }
+      //and store to sessionStorage
+      setStorage(this);
+    });
+    $('#wt').change(function(){
+      setBSA();
+      if ($.isNumeric($(this).val())) {
+        $('#pounds').html( '(' + ($(this).val()* 2.205).toFixed(1) + ' pounds)' );
+      } else {
+        $('#pounds').html('');
+      }
+      //and store to sessionStorage
+      setStorage(this);
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'news.html' %}
+{% block article %}
+<article>
+<h2>{{ article.meta.title }}
+    <a href="" class="permalink" title="Permalink">∞</a>
+</h2>
+<span class="post-category">
+    <span class="label">{{ article.meta.category }}</span>
+</span>
+<div class="post-meta">
+    <span class="post-date">
+      {{ article.meta.date }}
+    </span>&nbsp;
+    <span>
+      by {{ article.meta.author }}
+    </span>
+  </div>
+<div class="post-content">
+    {{ article.body|markdown|safe }}
+</div>
+</article>
+<script>
+    $(document).ready(function(){
+        $('a.permalink').attr('href', window.location);    
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+<div class="docs-nav-mobile unit whole show-on-mobiles">
+  <select onchange="if (this.value) window.location.href=this.value">
+    <option value="">Navigate the refs…</option>
+    {% if nav %}
+    {% for k, v in nav.items()|sort %}
+    <option value="/refs/{{ k }}">{{ v.name.split(",")[0] }}</option>
+    {% endfor %}{% endif %}
+  </select>
+</div>

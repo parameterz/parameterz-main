@@ -1,0 +1,23 @@
+{% set page = {'title': 'news page title', 'description': 'news page description'}%}
+{% extends "default.html" %}
+{% block content %}
+<div class="grid">
+<div class="unit whole">
+  <h1>An basic page</h1>
+{% filter markdown %} 
+You can have *inline* Markdown too!
+{% endfilter %}
+<form id="ref-data-form" action="/calc/echo/" method="get">
+  {% include "/includes/patient-all.html"%}
+  {% set ref = {'sites': ['aov', 'sov']}%}
+  {% include "/includes/ref-inputs.html" %}
+  <div class="grid">
+    <div class="unit center-on-mobiles"">
+    <input type="submit" value="Calculate" />
+    </div>
+  </div>
+</form>
+
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+# robotstxt.org/
+
+Sitemap: http://www.parameterz.com/sitemap.xml
+
+User-agent: *
+disallow: /disclaimer
+disallow: /news/changelog

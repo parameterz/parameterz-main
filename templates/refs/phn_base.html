@@ -1,0 +1,14 @@
+{% extends 'default.html' %}
+{% block content %}
+<section class="docs">
+    <div class="grid">
+      {% include 'includes/refs_contents_mobile.html' %}
+      <div class="unit whole">
+        <article>
+          {% block article %}{% endblock %}
+        </article>
+      </div>
+      <div class="clear"></div>
+    </div>
+</section>
+{% endblock %}

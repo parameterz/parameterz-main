@@ -1,0 +1,15 @@
+<div class="unit one-fifth hide-on-mobiles">
+<aside>
+    {% set current_page = current_page %}
+    <ul>
+    {% for k, v in nav.items()|sort %}
+        {% set ref = k %}
+        {% if current_page == ref %}
+        <li class="current"><h3><a href="/refs/{{ ref }}">{{ v.name.split(",")[0] }}</a></h3></li>
+        {% else %}
+        <li class=""><h3><a href="/refs/{{ ref }}">{{ v.name.split(",")[0] }}</a></h3></li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+</aside>
+</div>

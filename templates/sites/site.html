@@ -1,0 +1,159 @@
+{% extends "sites/base.html" %}
+{% set nav_item = "sites" %}
+{% block article %}
+  <h1>{{ data.title }}</h1>
+  <div>{{data.intro|markdown|safe}}</div>
+  <hr />
+    <div class="unit whole center-on-mobiles"><select name="ref" id="ref">
+      {% for ref in data['refs'] %}
+        <option value="{{ref[1]}}">{{ref[0]}}</option>
+      {% endfor %}
+    </select>
+    </div><div class="clear"></div>
+  <form id="ref-data-form" action="/calc/echo/" method="get">
+    {% include "/includes/patient-all.html"%}
+    {% set ref = data %}
+    {% include "/includes/ref-inputs.html" %}
+    <div class="grid">
+      <div class="unit center-on-mobiles">
+      <input type="submit" value="Update" />
+      <input id="reset-button" type="reset" value="Reset" />
+      </div>
+    </div>
+  </form>
+  <div id="loading" style="line-height: 115px; text-align: center;">
+    <img src='/static/img/ajax-loader.gif' />
+  </div>
+  <hr />
+  <div id="constraints" class="note">
+      <h5>Note: the study population had the following characteristics:</h5>
+      <ul><li>(no data...)</li>
+      </ul>
+      <p>Data entered for patients outside of these limits should be <em>used with caution</em>.</p>
+  </div>
+  <div id="citation">
+    <div class="citation title"><a href="" title="PubMed"></a></div>
+    <div class="citation authors"></div>
+    <div class="citation journal"></div>
+  </div>
+<script>
+  $( document ).ajaxStart(function() {
+    $( "#loading" ).show();
+  });
+  $( document ).ajaxComplete(function() {
+    $( "#loading" ).hide();
+  });
+  function sendAJAX(){
+    $.ajax({
+      dataType: "json",
+      url: $( "form" ).attr('action'),
+      data: $( "form" ).serialize(),
+      success: processAJAX,
+      error: function(e){
+        console.log(e);
+      }
+    });
+    return;
+  }
+  function processAJAX(data, status, XHR){
+    if (data.bsa) {
+      $('#bsaMethod').text('"' + data.bsaMethod + '"');
+      $('#bsa').val(data.bsa.toFixed(3));
+    }
+    else {
+      $('#bsaMethod').text('N/A');
+      $('#bsa').val('N/A');
+    }  
+    if (data.sites) {
+      $.each($('.measurement'), function(index, value) {
+        //for each measurement input, get the id and update the results from the returned data
+        var id = $(this).attr('id');
+        if (data.sites[id]) {
+          var site = data.sites[id];
+          $('#'+ id + '-zscore').html(site.zscore.toFixed(2));
+          $('#'+ id + '-range')
+          .html(site.lln.toFixed(2) + ' - ' + site.uln.toFixed(2))
+          .attr('title', 'mean: '+ site.mean.toFixed(2));
+        } else {
+          $('#'+ id + '-zscore').html('');
+          $('#'+ id + '-range')
+          .html('')
+          .attr('title', '');
+        }
+      });
+    }
+    //citation
+    $('.citation.title a').text(data.citation.title)
+      .attr('href', data.citation.url);
+    $('.citation.authors').text(data.citation.authors);
+    $('.citation.journal').text(data.citation.journal);
+    //constraints
+    if (data.constraints) {
+      //console.log(data.constraints)
+      $('#constraints ul').empty();
+      var li = [];
+      $.each(data.constraints, function(k, v){
+        li.push('<li>' + k + ' range: (' + v[0] +' - ' + v[1] + ')</li>');
+      });
+      //console.log(li);
+      $('#constraints ul').append(li.join(''));
+    }
+
+  }
+  //calculate the age
+  $('.age').change(function (){
+      //set the hidden input #age to age in years from the variable input
+      var age;
+      if ($('#ageVal') && $('#ageModifier')) {
+          switch ($('#ageModifier').val()) {
+              case 'd':
+                  age = $('#ageVal').val() / 365;
+                  break;
+              case 'w':
+                  age = $('#ageVal').val() / 52;
+                  break;
+              case 'm':
+                  age = $('#ageVal').val() / 12;
+                  break;
+              default:
+                  // also case 'y':
+                  age = $('#ageVal').val();
+          }
+          $('#age').val(age);
+      }
+  
+  });
+  //set up the inputs for each ref; set form action
+  $('#ref').change(function (){
+    //set form action
+    var action = '/calc/echo/';
+    $("form").attr('action', action + $('#ref').val() +'/');
+    //do the AJAX
+    sendAJAX();
+  });
+  $('.demog, .measurement').change(function(){
+    //store to sessionStorage
+    setStorage(this);
+    //and do the AJAX
+    sendAJAX();
+  });
+  $( "form" ).submit( function( event ) {
+    //send form data to server via AJAX 
+    sendAJAX();
+    event.preventDefault();
+  });
+
+  $(document).ready(function() {
+    //when the page loads,
+    //update the ref/form action
+    var action = '/calc/echo/';
+    $("form").attr('action', action + $('#ref').val() +'/');
+    // pull values from sessionStorage
+    $.each($('.demog, .measurement'), function () {
+        getStorage(this.id);
+    });
+    //update the age; this will force an AJAX update
+    $('.age').change();
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "tools/base.html" %}
+
+{% block article %}
+{% filter markdown %}
+## CHOP Fetal CV Profile Score
+
+This is an online calculator modeled after the scoring system proposed in:
+
+Rychik J, Tian Z, Bebbington M, et al.
+[The twin-twin transfusion syndrome: spectrum of cardiovascular abnormality and development of a cardiovascular score to assess severity of disease.](http://www.ncbi.nlm.nih.gov/pubmed/17904973)
+Am J Obstet Gynecol 2007;197:392.e1-392.e8.
+
+The score rates various indices of both donor and recipient twins' cardiovascular performance/remodeling, as measured by fetal echo.
+
+The only _calculation_ involved is the summing of the various individual scores and the subsequent grading of of the total score from '1' to '4'.
+{% endfilter %}
+<form id="CVForm">
+<div class="grid">
+    <fieldset>
+    <legend>Donor</legend>
+        <div class="unit half">
+            <div><label for="UAFlow" title="">Umbilical Artery Flow: </label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="UAFlow" name="UAFlow">
+                <option value="0" selected="selected">Normal</option>
+                <option value="1">Decreased diastolic flow</option>
+                <option value="2">Absent/reversed flow</option>
+            </select>
+        </div>
+        <div class="clear"> </div>
+
+    </fieldset>
+    
+    <fieldset>
+    <legend>Recipient</legend>
+        <div class="unit half">
+            <div><label for="VentHyper">Ventricular Hypertrophy:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="VentHyper" name="VentHyper">
+                        <option value="0" selected="selected">None</option>
+                        <option value="1">Present</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+ 
+        <div class="unit half">
+            <div><label for="Dilation">Cardiac Dilation:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="Dilation" name="Dilation">
+                        <option value="0" selected="selected">None (CT ratio < 1/3)</option>
+                        <option value="1">Mild (CT Ratio < 1/2)</option>
+                        <option value="2">> Mild (CT Ratio > 1/2) </option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+ 
+        
+        <div class="unit half">
+            <div><label for="Dysfunction">Ventricular Dysfunction:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="Dysfunction" name="Dysfunction">
+                        <option value="0" selected="selected">None (FS > 30%)</option>
+                        <option value="1">Mild (FS 20-30%)</option>
+                        <option value="2">> Mild (FS < 20%)</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+ 
+        
+        <div class="unit half">
+            <div><label for="TR">Tricuspid Regurgitation:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="TR" name="TR">
+                        <option value="0" selected="selected">None</option>
+                        <option value="1">Mild</option>
+                        <option value="2">> Mild</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+ 
+        
+        <div class="unit half">
+            <div><label for="MR">Mitral Regurgitation:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="MR" name="MR">
+                        <option value="0" selected="selected">None</option>
+                        <option value="1">Mild</option>
+                        <option value="2">> Mild</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+ 
+        
+        <div class="unit half">
+            <div><label for="TVInflow">Tricuspid Inflow:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="TVInflow" name="TVInflow">
+                        <option value="0" selected="selected">Distinct E & A</option>
+                        <option value="1">Fused E & A</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+ 
+        
+        <div class="unit half">
+            <div><label for="MVInflow">Mitral Inflow:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="MVInflow" name="MVInflow">
+                        <option value="0" selected="selected">Distinct E & A</option>
+                        <option value="1">Fused E & A</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+         
+        
+        <div class="unit half">
+            <div><label for="Ductus">Ductus Venosus Flow:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="Ductus" name="Ductus">
+                        <option value="0" selected="selected">All Antegrade</option>
+                        <option value="1">Absent Diastolic Flow</option>
+                        <option value="2">Reverse Diastolic Flow</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+  
+        
+        <div class="unit half">
+            <div><label for="UVFlow">Umbilical Vein:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="UVFlow" name="UVFlow">
+                        <option value="0" selected="selected">No Pulsation</option>
+                        <option value="1">Has Pulsations</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+  
+        
+        <div class="unit half">
+            <div><label for="RVOT">Right-sided Outflow Tract:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="RVOT" name="RVOT">
+                        <option value="0" selected="selected">PA > AO</option>
+                        <option value="1">PA = AO</option>
+                        <option value="2">PA < AO</option>
+                        <option value="3">Outflow Obstruction</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+  
+        
+        <div class="unit half">
+            <div><label for="PR">Pulmonary Regurgitation:</label></div>
+        </div>
+        <div class="unit half">
+            <select class="cvScoreElement" id="PR" name="PR">
+                        <option value="0" selected="selected">None</option>
+                        <option value="1">Present</option>
+                    </select>
+        </div>
+        <div class="clear"> </div>
+        
+    </fieldset>    
+    <div class="unit whole">
+        <h3>Cumulative Score: 
+            <span class="cvScoreResult" id="cvScore">0</span></h3>
+    </div> 
+    <div class="unit whole">
+        <h3>Cardiovascular Grade: 
+            <span class="cvScoreResult" id="cvGrade">1</span></h3>
+    </div> 
+    <div class="unit whole">
+        <input type="button" onclick="formReset()" value="Reset">
+    </div>
+    
+</div>
+</form>
+
+<script type="text/javascript">
+    function calcCVScore() {
+        var sum = 0;
+        $('.cvScoreElement').each(function() {
+            var score = parseInt($(this).val());
+            sum += score
+        });
+        $('#cvScore').text(sum);
+        //assign grade
+        var grade
+        if (sum <= 5) { grade = 1 }
+        else if (sum <= 10 ) { grade = 2}
+        else if (sum <= 15) { grade = 3}
+        else { grade = 4 };
+
+        $('#cvGrade').text(grade);
+    }
+
+    function formReset() {
+        $('#CVForm')[0].reset();
+        $('.cvScoreElement').change();
+
+    }
+</script>
+
+<script type="text/javascript">
+    $('.cvScoreElement').change(function() {
+       calcCVScore();
+    });
+    $('.cvScoreElement').change().css('width', '95%');
+
+</script>
+
+{% endblock %}

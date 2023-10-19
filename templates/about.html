@@ -1,0 +1,142 @@
+{% extends "default.html" %}
+{% block content %}
+<div class="grid">
+  <div class="unit whole">
+    <article>
+{% filter markdown %}
+### About This Site
+
+I created this site because I wanted to better understand just what the heck it was that we were calling *"normal"*:
+
+> the definition of abnormal relies on the definition of normal[^abnormal] 
+
+After all, this distinction is kind of *why* we are making these measurements.
+
+Enter z-scores: "Just get the z-score, and you'll know if it's normal or not."
+
+Simple enough, right?
+
+[^abnormal]: [Normal reference ranges for echocardiography:
+do we really need more?](http://www.ncbi.nlm.nih.gov/pubmed/24378483)
+
+### About Z-Scores
+
+Z-scores (or standard scores) describe the distance, in standard deviations,
+a given measurement is from the mean value. The
+[WikiPedia entry](http://en.wikipedia.org/wiki/Standard_score) provides 
+insight into something foundational about the concept:
+
+>the use of "Z" is because the normal distribution is also known as the "Z distribution"
+
+We are fond of using z-scores in pediatric cardiology because, theoretically, they help us deal with the
+confounding effect of normal somatic growth. However, not all z-scores equations are created
+equal. A recent editorial[^why] and critical reviews[^reviews] expose these inequalities and
+help set the current state of the art in this field.  
+Interested persons should read them.
+
+[^why]: I found the recent "why and how of *Z* scores" [editorial](http://www.ncbi.nlm.nih.gov/pubmed/23261367)
+a little bit confusing&mdash;by mistakenly substituting BMI (instead of BSA) as the size-adjusting
+variable&mdash; but overall an excellent discussion (sadly, even the later
+[correction](http://www.onlinejase.com/article/S0894-7317(13)00005-9/fulltext)
+is still in need of correction).
+
+[^reviews]: 
+[Dallaire and Dahdah](http://www.ncbi.nlm.nih.gov/pubmed/21074965)
+basically schooled us all on what to (and not to) do in their coronary artery
+<del>manifesto</del> manuscript;
+that same group's harsh but fair
+[criticism of statistical methods](http://www.ncbi.nlm.nih.gov/pubmed/23140845)
+and the recent critique of measurement
+methodologies by [Cantinotti et al.](http://www.ncbi.nlm.nih.gov/pubmed/22101087)
+should, in my opinion,
+be required reading for students of pediatric echocardiography.
+
+
+###About Me
+
+My name is Dan Dyar.
+I became interested in studying hearts at about the time echocardiography was
+just hitting its stride. I have always wondered about how we, as a community and
+industry, could have developed such a sophisticated tool yet
+often we have a primitive (if not frankly incorrect) approach to
+classifying normal and abnormal findings.
+
+I like to think that by providing these calculators on the web, not only will
+I have personally learned more about reference values, but maybe others will be inspired to
+deepen their own understanding about the very point of measurement in echocardiography.
+
+View my CV [here.](/static/docs/cv.html)
+
+
+{% endfilter %}
+
+  <div id="contact">
+    <h3>Contact Me</h3>
+    {% if errors %}
+      <div class="error">
+        <h4><em>Oops!</em></h4>
+        <ul>
+        {% for error in errors %}<li>{{error}}</li>{% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    <form id="contact-form" method="post">
+      <fieldset>
+        <legend></legend>
+      <div>
+          <div>
+              <label for="name">
+                  Your name:
+              </label>
+          </div>
+          <div>
+            <input type="text" name="name" value="{% if form %}{{form.name}}{% endif %}" id="name" required="required" />
+          </div>
+      </div>
+      <div>
+          <div>
+              <label for="email">
+                  Your email:
+              </label>
+          </div>
+          <div>
+              <input type="email" name="email" value="{% if form %}{{form.email}}{% endif %}" id="email" required="required" />
+          </div>
+      </div>
+      <div>
+          <div>
+              <label for="comment">
+                  Your comment:
+              </label>
+          </div>
+          <div>
+              <textarea name="comment" rows="8" cols="50" id="comment" required="required">{% if form %}{{form.comment}}{% endif %}</textarea>
+          </div>
+      </div>
+      <div>
+        <input type="submit" class="button" value="Submit" />
+      </div>
+      </fieldset>
+    </form>
+  </div>
+    </article>
+  </div>
+</div>
+<script>
+var err = "{{errors}}";
+
+$(document).ready(function() {
+  //thanks to
+  //http://www.dougnorfolk.com.au/forster-articles/easy-captcha-alternative-using-jquery/
+  // Splitting up the name of the file means a robot has no hope of somehow using it for injecting - perhaps overkill, perhaps not?
+  var a = '/abo';
+  var b = 'ut';
+  
+  // Use jQuery to add the action address. Bam
+  $("form").attr('action',a+b);
+  if (err) {
+    window.location = window.location + "#contact";
+  }
+});
+</script>
+{% endblock %}

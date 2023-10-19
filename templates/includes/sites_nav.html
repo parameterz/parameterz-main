@@ -1,0 +1,13 @@
+<div class="unit one-fifth hide-on-mobiles">
+<aside>
+    <ul>
+    {% for k,v in nav.items()|sort %}
+        {% if current_page == k %}
+        <li class="current"><h3><a href="/sites/{{ k }}">{{ v['title'] }}</a></h3></li>
+        {% else %}
+        <li class=""><h3><a href="/sites/{{ k }}">{{ v['title'] }}</a></h3></li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+</aside>
+</div>

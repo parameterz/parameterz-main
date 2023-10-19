@@ -1,0 +1,33 @@
+<fieldset>
+    <legend>Patient Demographics</legend>
+    <div>
+        <label for="ht">Height (cm):</label>
+        <input type="number" class="demog" name="ht" id="ht" min=0 step="0.1" />
+    </div>
+    <div>
+        <label for="wt">Weight (kg):</label>
+        <input type="number" name="wt" id="wt" class="demog" min=0 step="0.1" />
+    </div>
+    <div>
+        <label for="bsa">BSA (<span id="bsaMethod"></span>):</label>
+        <input type="text" id="bsa" class="bsa" disabled="disabled" />
+    </div>
+    <div>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" class="demog">
+            <option value="f" selected="selected">Female</option>
+            <option value="m">Male</option>
+        </select>
+    </div>
+    <div>
+        <label for="ageVal">Age:</label>
+        <input type="number" id="ageVal" class="age demog" />
+        <select id="ageModifier" class="age demog">
+            <option value="y">years</option>
+            <option value="m">months</option>
+            <option value="w">weeks</option>
+            <option value="d">days</option>
+        </select>
+        <input type="hidden" id="age" name="age" class="demog" />
+    </div>
+</fieldset>

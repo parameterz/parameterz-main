@@ -1,0 +1,387 @@
+{% extends "tools/base.html" %}
+{% block article %}
+<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../static/js/vendor/excanvas.min.js"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="../../static/js/vendor/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="../../static/js/vendor/jquery.flot.crosshair.min.js"></script>
+{% filter markdown %}
+#Estimate Height and Weight
+## (from BSA)
+Based upon data from the
+[CDC](http://www.cdc.gov/growthcharts/percentile_data_files.htm),
+[WHO](http://www.cdc.gov/growthcharts/who_charts.htm), and
+[AAP](http://www.ncbi.nlm.nih.gov/pubmed/20100760);
+use this calculator or the following [tables](#girls) to "reverse engineer" a height and
+weight from a known BSA:
+{% endfilter %}
+<div>
+<div>
+    <label for="bsa">Enter BSA:&nbsp;</label>
+    <input id="bsa" type="number" placeholder="enter BSA" min="0.07" max="1.86" step="0.01" />
+</div>
+<hr />
+<div>
+    <div>Use this height: <span id="ht"></span>&nbsp;(cm)</div>
+    <div>and this weight: <span id="wt"></span>&nbsp;(kg)</div>
+</div>
+</div>
+
+<h3>BSA vs. Age</h3>
+<p>This chart shows BSA (meters<sup>2</sup>) versus age (months) for girls and boys:</p>
+<div id="placeholder" style="width:100%;height:400px"></div>
+<div class="clear"></div>
+<div id="legend"></div>
+<div class="clear"></div>
+{% filter markdown %}
+###Notes:
+
+First of all, do everything you can to get the *actual* height and weight of the
+subjects on whom you are about to make statements about the
+normalcy of their hearts.
+
+OK.  
+So you're *not* using this for your actual patients, right?  
+Good.
+
+A feature request was made to "allow users to enter BSA" for the occasional case
+when the height and weight are not known&mdash; rather than always calculating BSA.
+Initially, this seemed reasonable. However, as I started to dig into the implementation,
+it became clear that this was going to violate a core principle of this version:
+*always calculate the independent variable according to the source*. Here are some of the
+problems:
+
+* Not all the calculators use the same BSA equation
+* It might be impossible to
+know which by equation the user arrived at the BSA they were entering
+* Some z-score equations *do not use BSA* as the independent measure.
+
+So, I built this as more of programming exercise than anything else. 
+
+####How it works
+I used the published LMS data for height and weight (see links, above) to calculate BSA (Haycock formula)
+and construct the tables. Then, an exact match is sought within those tables. If an exact match is not found, an
+approximation is made based on the [splines fitted](http://zunzun.com/ "zunzun is the bomb") through the height/weight relationship with BSA. If that
+approximation is not an exact match, the height and weight are incremented until an exact match is made.
+
+![height vs. BSA](/static/img/ht_vs_bsa.png "derived height vs. BSA relationship")
+
+![weight vs. BSA](/static/img/wt_vs_bsa.png "derived weight vs. BSA relationship")
+
+The calculator works perfectly for finding the known BSA's of average children
+(BSA's between about 0.1 and 1.86). For BSA values outside of that range, my prediction algorithm-
+while accurate- tends to make some strangely proportioned subjects. So again, I
+caution against using this for anything other than amusement.
+
+{% endfilter %}
+
+<div id="girls">
+<h3>Girls</h3>
+<p>Go to <a href="#boys">Boys</a></p>
+<table class="data-table">
+    <caption>50%-ile BSA(Haycock), height, and weight data for girls (by age)</caption>
+    <thead>
+    <tr>
+        <th>BSA</th>
+        <th>Age (mos)</th>
+        <th>Height (cm)</th>
+        <th>Weight (kg)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in girlsData %}
+        <tr>
+            <td>{{'%.3f'|format(row[0])}}</td>
+            <td>{{row[1]}}</td>
+            <td>{{'%.2f'|format(row[2])}}</td>
+            <td>{{'%.2f'|format(row[3])}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<div class="clear"></div>
+<div id="boys">
+<h3>Boys</h3>
+<p>Go to <a href="#girls" style="color: hotpink">Girls</a></p>
+<table class="data-table">
+    <caption>50%-ile BSA(Haycock), height, and weight data for boys (by age)</caption>
+    <thead>
+    <tr>
+        <th>BSA</th>
+        <th>Age (mos)</th>
+        <th>Height (cm)</th>
+        <th>Weight (kg)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in boysData %}
+        <tr>
+            <td>{{'%.3f'|format(row[0])}}</td>
+            <td>{{row[1]}}</td>
+            <td>{{'%.2f'|format(row[2])}}</td>
+            <td>{{'%.2f'|format(row[3])}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<div class="clear"></div>
+<p><a href="#">top &uarr;</a></p>
+<script type="text/javascript">
+var boysData = {{boysData|safe}},
+    girlsData = {{girlsData|safe}};
+    
+    function calcBSA(ht, wt) {
+        //Haycock
+        return 0.024265 * Math.pow(ht, 0.3964) * Math.pow(wt, 0.5378);
+    }
+//HT EQN
+// To the best of my knowledge this code is correct.
+// If you find any errors or problems please contact
+// me at zunzun@zunzun.com.
+//      James
+//
+// the code below was partially based on the fortran code at:
+// http://svn.scipy.org/svn/scipy/trunk/scipy/interpolate/fitpack/splev.f
+// http://svn.scipy.org/svn/scipy/trunk/scipy/interpolate/fitpack/fpbspl.f
+
+    function Ht_spline_evaluation(x_in)
+    {
+        var t = [7.8068976235968951E-02, 7.8068976235968951E-02, 7.8068976235968951E-02, 7.8068976235968951E-02, 2.1886222099516736E-01, 3.5909848230811425E-01, 4.5644956979199686E-01, 5.1936389434315389E-01, 5.3380821922430666E-01, 5.5965461085432855E-01, 5.7017580501028120E-01, 6.5084498590697692E-01, 7.3187550906287346E-01, 9.0622691621570972E-01, 1.0936847652455226E+00, 1.2115628902278304E+00, 1.3400542258938655E+00, 1.6193451929980665E+00, 1.8629854883438959E+00, 1.8629854883438959E+00, 1.8629854883438959E+00, 1.8629854883438959E+00];
+        var coeff = [3.1518713801752899E+01, 4.1286018680139847E+01, 5.0206874819999712E+01, 6.1866310633975168E+01, 7.3645095960094025E+01, 8.2556372523282562E+01, 8.6005254768682164E+01, 8.6258834758574437E+01, 9.1755109454364955E+01, 9.9581456129566320E+01, 1.1049181493686407E+02, 1.2526767511977441E+02, 1.3720924617413911E+02, 1.4462625869020962E+02, 1.5471439020837886E+02, 1.7123984750838591E+02, 1.7609699139883944E+02, 1.7684303568350697E+02, 0.0000000000000000E+00, 0.0000000000000000E+00, 0.0000000000000000E+00, 0.0000000000000000E+00];
+        var n = 22;
+        var k = 3;
+
+        var h = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        var hh = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+
+        var i, j, li, lj, ll;
+        var f, temp;
+        
+        var k1 = k+1;
+        var l = k1;
+        var l1 = l+1;
+
+        while ((x_in < t[l-1]) && (l1 != (k1+1)))
+        {
+            l1 = l;
+            l = l-1;
+        }
+
+        while ((x_in >= t[l1-1]) && (l != (n-k1)))
+        {
+            l = l1;
+            l1 += 1;
+        }
+
+        h[0] = 1.0;
+        for (j = 1; j < k+1; j++)
+        {
+            for (i = 0; i < j; i++)
+            {
+                hh[i] = h[i];
+            }
+            h[0] = 0.0;
+            for (i = 0; i < j; i++)
+            {
+                li = l+i;
+                lj = li-j;
+                if (t[li] != t[lj])
+                {
+                    f = hh[i] / (t[li] - t[lj]);
+                    h[i] = h[i] + f * (t[li] - x_in);
+                    h[i+1] = f * (x_in - t[lj]);
+                }
+                else
+                {
+                    h[i+1] = 0.0;
+                }
+            }
+        }
+
+        temp = 0.0;
+        ll = l - k1;
+        for (j = 0; j < k1; j++)
+        {
+            ll = ll + 1;
+            temp = temp + coeff[ll-1] * h[j];
+        }
+        
+        return temp;
+    }
+// WT EQN
+// To the best of my knowledge this code is correct.
+// If you find any errors or problems please contact
+// me at zunzun@zunzun.com.
+//      James
+//
+// the code below was partially based on the fortran code at:
+// http://svn.scipy.org/svn/scipy/trunk/scipy/interpolate/fitpack/splev.f
+// http://svn.scipy.org/svn/scipy/trunk/scipy/interpolate/fitpack/fpbspl.f
+
+    function Wt_spline_evaluation(x_in)
+    {
+        var t = [7.8068976235968951E-02, 7.8068976235968951E-02, 7.8068976235968951E-02, 7.8068976235968951E-02, 1.0936847652455226E+00, 1.3400542258938655E+00, 1.6193451929980665E+00, 1.8629854883438959E+00, 1.8629854883438959E+00, 1.8629854883438959E+00, 1.8629854883438959E+00];
+        var coeff = [3.3201638207819567E-01, 7.8724144422814071E+00, 1.9302070507318959E+01, 4.3182520153428406E+01, 5.5053515620195526E+01, 6.5021140909086569E+01, 7.0601140274236101E+01, 0.0000000000000000E+00, 0.0000000000000000E+00, 0.0000000000000000E+00, 0.0000000000000000E+00];
+        var n = 11;
+        var k = 3;
+
+        var h = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        var hh = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+
+        var i, j, li, lj, ll;
+        var f, temp;
+        
+        var k1 = k+1;
+        var l = k1;
+        var l1 = l+1;
+
+        while ((x_in < t[l-1]) && (l1 != (k1+1)))
+        {
+            l1 = l;
+            l = l-1;
+        }
+
+        while ((x_in >= t[l1-1]) && (l != (n-k1)))
+        {
+            l = l1;
+            l1 += 1;
+        }
+
+        h[0] = 1.0;
+        for (j = 1; j < k+1; j++)
+        {
+            for (i = 0; i < j; i++)
+            {
+                hh[i] = h[i];
+            }
+            h[0] = 0.0;
+            for (i = 0; i < j; i++)
+            {
+                li = l+i;
+                lj = li-j;
+                if (t[li] != t[lj])
+                {
+                    f = hh[i] / (t[li] - t[lj]);
+                    h[i] = h[i] + f * (t[li] - x_in);
+                    h[i+1] = f * (x_in - t[lj]);
+                }
+                else
+                {
+                    h[i+1] = 0.0;
+                }
+            }
+        }
+
+        temp = 0.0;
+        ll = l - k1;
+        for (j = 0; j < k1; j++)
+        {
+            ll = ll + 1;
+            temp = temp + coeff[ll-1] * h[j];
+        }
+        
+        return temp;
+    }
+
+    function increment(val) {
+        return val + 0.1;
+    }
+    
+    function decrement(val) {
+        return val - 0.1;
+    }
+    
+    function adjust_htwt(targetBSA, ht, wt) {
+        //return an array: [ht, wt] that exactly matches target bsa
+        //start with values rounded to nearest tenth
+        ht = +(ht).toFixed(1);
+        wt = +(wt).toFixed(1);
+        while (targetBSA !== calcBSA(ht, wt).toFixed(2)) {
+            if (targetBSA > calcBSA(ht, wt)) {
+                console.log('incr. wt');
+                wt = increment(wt);
+            } else if (targetBSA < calcBSA(ht, wt)) {
+                console.log('decr. ht');
+                ht = decrement(ht);
+            }
+            
+        }
+        return [ht, wt];
+    }
+    
+function find_htwt(bsa) {
+        var datasets = [girlsData, boysData],
+            found = false,
+            ht, wt;
+        //look in datasets for an exact match
+        for (var i = 0; i < datasets.length; i++) {
+            for (var j = 0; j < datasets[i].length; j++) {
+                var row = datasets[i][j];
+                if (row[0].toFixed(2) == bsa) {
+                    found = true;
+                    ht = row[2];
+                    wt = row[3];
+                    break;
+                }
+            }
+        }
+        if (found) {
+            console.log('found it: ht = ' + ht + '\n wt = ' + wt);
+            
+        } else {
+            console.log('no match; trying a prediction based on spline fit...');
+            //try a spline fit 
+            ht = Ht_spline_evaluation(bsa);
+            wt = Wt_spline_evaluation(bsa);
+            console.log('trying these points: [' + ht + ', ' + wt + ']');
+            if (bsa == +calcBSA(ht, wt).toFixed(2)) {
+                //perfect fit
+                console.log('perfect fit!');
+            } else {
+                console.log('refining ... ');
+                refined = adjust_htwt(bsa, ht, wt);
+                ht = refined[0];
+                wt = refined[1];
+            }
+        }
+        return {'ht': ht, 'wt': wt};}
+
+
+
+$(function() {
+    //charting
+    function getSubArray(data, x, y) {
+        //boysData/girlsData are in this format:
+        var order = [ 'bsa', 'age', 'ht', 'wt' ];
+        var arr = [];
+        for (var i = 0; i < data.length; i++) {
+            arr.push([ data[i][order.indexOf(x)], data[i][order.indexOf(y)] ]);
+        }
+        
+        return arr;
+    }
+    
+    var data = [
+            { data: getSubArray(girlsData, 'age', 'bsa'), label: 'Girls', color: 'hotpink' },
+            { data: getSubArray(boysData, 'age', 'bsa'), label: 'Boys', color: 'dodgerblue' }
+    ];
+    
+    var options = {
+            legend: {
+                container: '#legend',
+                backgroundColor: null
+            }
+    };
+
+    var plot = $.plot("#placeholder", data, options);
+    //end charting
+
+    $('#bsa').change(function(){
+        var htwt = find_htwt(parseFloat($(this).val()).toFixed(2));
+        $('#ht').text(htwt.ht.toFixed(2));
+        $('#wt').text(htwt.wt.toFixed(2));
+    });
+});
+
+</script>
+{% endblock %}

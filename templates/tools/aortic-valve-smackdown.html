@@ -1,0 +1,113 @@
+{% extends "tools/base.html" %}
+
+{% block article %}
+
+{% filter markdown %}
+##Aortic Valve vs. BSA
+###Comparing Multiple References
+{% endfilter %}
+<div>
+Select reference to plot: 
+<select id="aov-ref">
+    <option value="Lopez">Lopez et al., Circ CV Img 2017</option>
+    <option value="Cantinotti2">Cantinotti et al., J Card 2017</option>
+    <option value="Dallaire">Dallaire et al., JASE 2015</option>
+    <option value="Cantinotti">Cantinotti et al., JASE 2014</option>
+    <option value="Gautier">Gautier et al., AJC 2010</option>
+    <option value="Pettersen">Pettersen et al., JASE 2008</option>
+    <option value="Colan">Colan et al., JACC 2006</option>
+    <option value="Warren">Warren et al., Heart 2006</option>
+    <option value="Zilberman">Zilberman et al., Ped Card 2005</option>
+    <option value="Daubeney">Daubeney et al., Ped Card 1999</option>
+</select>
+</div>
+<div class="clear"></div>
+<div class="plot-container">
+    <div id="placeholder" style="width:100%;height:400px"></div>
+    <div class="clear"></div>
+    <div id="legend"></div>
+    <div class="clear"></div>
+</div>
+
+{% filter markdown %}
+
+Notes:
+
+* Plots are mean and &plusmn;1.96 SD.
+* For the gender-specific models (Dallaire, Gautier, Zilberman), the data for girls are shown.
+* The Dallaire data use 50%ile height and weight values based on the WHO and CDC growth chart data; in order to compare plots BSA is calculated (per the Haycock method).
+* The 2014 Cantinotti data is limited to 0-3 years, &le;0.67 m<sup>2</sup>.
+* Each of the references can be explored further [here](/refs/), [here](/sites/aortic-root), or [here](/sites/valves).
+
+{% endfilter %}
+
+<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../static/js/vendor/excanvas.min.js"></script><![endif]-->
+<script src="../../static/js/smackdown-girls-aov.js"></script>
+<script src="../../static/js/vendor/jquery.flot.min.js"></script>
+<script src="../../static/js/vendor/jquery.flot.fillbetween.js"></script>
+<script type="text/javascript">
+
+	$(function() {
+        
+        var dataset = [
+			{ id: "mean", label: "Lopez", data: Lopez["mean"], lines: { show: true, fill: 0.4, shadowSize: 0 }, color: "rgb(50,50,255)", fillBetween: "lower" },
+			{ id: "lower", data: Lopez["lower"], lines: { show: true, lineWidth: 0, fill: false }, color: "rgb(255,50,50)" },
+			{ id: "upper", data: Lopez["upper"], lines: { show: true, lineWidth: 0, fill: 0.4 }, color: "rgb(50,50,255)", fillBetween: "mean" },
+
+		];
+
+		$.plot($("#placeholder"), dataset, {
+			xaxis: {
+				min: 0.20,
+                max: 1.65
+			},
+			yaxis: {
+				tickFormatter: function (v) {
+					return v + " mm";
+				},
+                min: 0,
+                max: 30
+            
+			},
+            legend: {
+                container: '#legend'
+            }
+		});
+        //notice when the user changes the select
+        $('#aov-ref').change(function(){
+            //alert($(this).val());
+            updatePlot($(this).val());
+        });
+	});
+
+
+    function updatePlot(ref) {
+        var dataset = [
+			{ id: "mean", label: ref, data: window[ref]["mean"], lines: { show: true, fill: 0.4, shadowSize: 0 }, color: "rgb(50,50,255)", fillBetween: "lower" },
+			{ id: "lower", data: window[ref]["lower"], lines: { show: true, lineWidth: 0, fill: false }, color: "rgb(255,50,50)" },
+			{ id: "upper", data: window[ref]["upper"], lines: { show: true, lineWidth: 0, fill: 0.4 }, color: "rgb(50,50,255)", fillBetween: "mean" },
+
+		];
+        $.plot($("#placeholder"), dataset, {
+			xaxis: {
+				min: 0.20,
+                max: 1.65
+			},
+			yaxis: {
+				tickFormatter: function (v) {
+					return v + " mm";
+				},
+                min: 0,
+                max: 30
+            
+			},
+            legend: {
+                container: '#legend'
+            }
+		});
+
+    }
+</script>
+
+ 
+{% endblock %}

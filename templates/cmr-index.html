@@ -1,0 +1,22 @@
+{% extends "default.html" %}
+{% block content %}
+<div class="grid">
+  <div class="unit whole">
+    <article>
+{% filter markdown %}
+#Cardiac MRI
+
+It seems like a natural extension to incorporate CMR data. I am not at all familiar with the technique or literature,
+        but adapting these manuscripts seemed straightforward:
+
+{% endfilter %}
+        <ul>
+            {% for key, value in refs.items()|sort %}
+            <li><a href="{{key}}">{{value.description}}; {{value.citation.journal}}</a></li>
+      {% endfor %}
+        </ul>
+    </article>
+  </div>
+</div>
+
+{% endblock %}

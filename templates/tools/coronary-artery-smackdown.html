@@ -1,0 +1,245 @@
+{% extends "tools/base.html" %}
+
+{% block article %}
+
+{% filter markdown %}
+##Coronary Artery Z-Score _Smackdown_
+###Comparing Multiple References
+{% endfilter %}
+<div>
+<p>Select reference to plot:</p>
+
+<select id="ca-ref">
+    <option value="Dallaire">Dallaire et al., JASE 2011</option>
+    <option value="McCrindle">McCrindle et al., Circ 2007</option>
+    <option value="Kobayashi_girls">Kobayashi et al., JASE 2016 (girls)</option>
+    <option value="Kobayashi_boys">Kobayashi et al., JASE 2016 (boys)</option>
+    <option value="Olivieri">Olivieri et al., JASE 2009</option>
+</select>
+</div>
+<div class="clear">&nbsp;</div>
+<div class="plot-container">
+    <div id="ca_plots"></div>
+    <div class="clear"></div>
+    <div id="legend"></div>
+    <div class="clear">&nbsp;</div>
+</div>
+<div>
+{% filter markdown %}
+
+Note:
+
+* Plots are mean &plusmn;1.96 SD for the LMCA.
+
+
+{% endfilter %}
+</div>
+
+<div>
+<p>Or, for a different perspective, check out these coronary dimension vs. z-score plots for a few hypothetical cases:</p>
+<select id="ca-hypothetical">
+    <option value="infant">LMCA of typical 6mo female</option>
+    <option value="toddler">LAD of typical 2yo female</option>
+    <option value="child">RCA of typical 9yo male</option>
+</select>
+</div>
+<div class="clear">&nbsp;</div>
+<div class="plot-container">
+    <div id="chart_div"></div>
+    <div class="clear">&nbsp;</div>
+
+</div>
+<div>{% filter markdown %}
+
+Note:
+
+I used the following data for the above calculations/charts:
+
+* Infant, Female: 65 cm; 7.3 kg;
+* Toddler, Female: 85 cm; 12 kg;
+* Child, Male: 134 cm; 28.7 kg
+
+
+
+{% endfilter %}
+</div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="../../static/js/smackdown-cor-arts.js"></script>
+
+<script type="text/javascript">
+
+
+google.charts.load('current', {
+  packages: ['corechart', 'line']
+});
+google.charts.setOnLoadCallback(initialDraw);
+
+
+function initialDraw(){
+    drawInfantData();
+    drawDallaire();
+}
+
+
+//
+// z-score - for - diameter charts
+//
+
+function drawZScorePlot(o) {
+    var data = new google.visualization.arrayToDataTable(o.data);
+
+    var options = {
+    'title': o.title,
+    'height': 500,
+    hAxis: {
+      title: o.xaxis,
+      ticks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    },
+    vAxis: {
+      title: 'Z-Score'
+
+    },
+    backgroundColor: '#f1f8e9'
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+  chart.draw(data, options);
+}
+
+function drawInfantData() {
+    o = {}
+    o.data = infant;
+    o.title = "Infant, Female, LMCA";
+    o.xaxis = "LMCA Diam (mm)"
+
+    drawZScorePlot(o);
+}
+
+function drawToddlerData() {
+    o = {}
+    o.data = toddler;
+    o.title = "Toddler, Female, LAD";
+    o.xaxis = "LAD Diam (mm)"
+
+    drawZScorePlot(o);
+
+}
+
+function drawChildData() {
+    o = {}
+    o.data = child;
+    o.title = "Child, Male, RCA";
+    o.xaxis = "RCA Diam (mm)"
+
+    drawZScorePlot(o);
+
+}
+$('#ca-hypothetical').change(function(){
+            //alert($(this).val());
+            switch ($(this).val()){
+                case 'infant':
+                    drawInfantData();
+                    break;
+                case 'toddler':
+                    drawToddlerData();
+                    break;
+                case 'child':
+                    drawChildData();
+                    break;
+
+            }
+        });
+
+//
+//cor art vs bsa charts
+//
+
+function drawPlot(o) {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'x');
+        data.addColumn('number', 'values');
+        data.addColumn({id:'lln', type:'number', role:'interval'});
+        data.addColumn({id:'uln', type:'number', role:'interval'});
+
+        data.addRows(o.data);
+
+        //
+        var options = {
+            title: o.title,
+            curveType: 'function',
+            lineWidth: 1,
+            intervals: { 'style':'area' },
+            legend: 'none',
+            'height': 500,
+            hAxis: {
+              title: 'BSA'
+            },
+            vAxis: {
+              title: 'LMCA (mm)',
+              minValue: 0,
+              maxValue: 6,
+              ticks: [1,2,3,4,5,6]
+            },
+            backgroundColor: '#f1f8e9'
+        };
+
+        var chart_lines = new google.visualization.LineChart(document.getElementById('ca_plots'));
+        chart_lines.draw(data, options);
+}
+
+function drawDallaire(){
+    o = {};
+    o.title = 'Dallaire et al.';
+    o.data = Dallaire;
+
+
+    drawPlot(o);
+}
+
+function drawMcCrindle(){
+    o = {};
+    o.title = 'McCrindle et al.';
+    o.data = McCrindle;
+
+
+    drawPlot(o);
+}
+
+function drawKobayashi_girls(){
+    o = {};
+    o.title = 'Kobayashi et al. (girls)';
+    o.data = Kobayashi_girls;
+
+
+    drawPlot(o);
+}
+
+function drawKobayashi_boys(){
+    o = {};
+    o.title = 'Kobayashi et al. (boys)';
+    o.data = Kobayashi_boys;
+
+
+    drawPlot(o);
+}
+
+function drawOlivieri(){
+    o = {};
+    o.title = 'Olivieri et al.';
+    o.data = Olivieri;
+
+
+    drawPlot(o);
+}
+
+//notice when the option select is changed
+$('#ca-ref').change(function(){
+            //alert($(this).val());
+            var func = 'draw' +  $(this).val();
+            window[func]();
+        });
+
+</script>
+
+ 
+{% endblock %}

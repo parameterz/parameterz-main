@@ -1,0 +1,12 @@
+{% if ref.constraints %}
+<div>
+    <div class="note">
+        <h5>Note: the study population had the following characteristics:</h5>
+        <ul>
+        {% for k,v in ref.constraints.items()|sort %}
+            <li>{{ k}} range: ({{ v[0] }} - {{ v[1] }})</li>
+        {% endfor %}
+        </ul>
+        <p>Data entered for patients outside of these limits should be <em>used with caution</em>.</p>
+    </div>
+</div>{% endif %}

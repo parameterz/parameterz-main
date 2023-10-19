@@ -1,0 +1,49 @@
+{% extends "sites/base.html" %}
+{% block content %}
+<div class="grid">
+<div class="unit whole">
+  <article>
+  <h1>Methods</h1>
+  <p>
+    It is critical that users apply the same measurement methodolgy as used in the
+    generation of the reference values. For the most part (except where otherwise noted), measurements included
+    herein abide by the recent
+    <a href="http://download.journals.elsevierhealth.com/pdfs/journals/0894-7317/PIIS089473171000266X.pdf">
+        ASE Pediatric Guidelines
+    </a>.
+  </p>
+  <p>
+    Briefly, the following principles apply:
+  </p>
+  <dl>
+        <dt>M-Mode:</dt>
+        <dd>Measurements are made using the "leading edge to leading edge" convention.</dd>
+        <dt>2D:</dt>
+        <dd>Measurements are made from the endocardial surfaces; vascular diameters use the "inner edge
+        to inner edge" convention, measuring perpendicular to the vessel wall.</dd>
+  </dl>
+    <h2>Details</h2>
+    <p>The following list provides technical detail for individual site measurements:</p>
+  <dl>
+    {% for m in meas %}
+      <dt id="{{m.id}}">{{ m.long_name }} ({{m.modality}})</dt>
+      <dd>Units: <span class="methods-def">{{m.units}}</span></dd>
+      <dd>View: <span class="methods-def">{{m.view}}</span></dd>
+      <dd>Timing: <span class="methods-def">{{m.timing}}</span></dd>
+      <dd>Where to measure: <span class="methods-def">{{m.landmark}}</span></dd>
+    {% endfor %}
+  </dl>
+  <hr />
+  <p>
+    Please <a href="/about#contact">contact me</a> or
+    <a href="http://code.parameterz.com/main/issues/new">create an issue</a>
+    to report errors or omissions in this listing.
+  </p>
+  <p>
+    <a href="#">Back to top</a>
+  </p>
+  </article>
+</div>
+</div>
+
+{% endblock %}

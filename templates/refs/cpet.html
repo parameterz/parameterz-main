@@ -1,0 +1,157 @@
+{% extends "refs/phn_base.html" %}
+
+{% block article %}
+  <h1>{{ ref.name }}</h1>
+  {% if ref.detail %}
+  <div>
+    {{ref.detail|markdown|safe}}
+  </div>{% endif %}
+  <div><p>Explanation here...</p>
+      <blockquote>
+          <p>These new and updated
+reference values should provide a more accurate lower normal
+limit. This may improve their value for the diagnosis,
+prognosis, and risk stratification of children with chronic
+diseases</p>
+      </blockquote>
+  </div>
+  <hr />
+  <form id="ref-data-form" action="/cpet/calc/" method="get">
+    {% include "/includes/patient-cpet.html"%}
+    {% include "/includes/ref-inputs.html"%}
+    <div class="grid">
+      <div class="unit center-on-mobiles">
+      <input type="submit" value="Update" />
+      <input id="reset-button" type="reset" value="Reset" />
+      </div>
+    </div>
+  </form>
+  <div id="loading" style="line-height: 115px; text-align: center;">
+    <img src='/static/img/ajax-loader.gif' />
+  </div>
+  <hr />
+  {% include "/includes/limits.html"%}
+  <div id="citation">
+    <div class="citation title"><a href="{{ref.citation.url}}" title="PubMed">{{ref.citation.title}}</a></div>
+    <div class="citation authors">{{ref.citation.authors}}</div>
+    <div class="citation journal">{{ref.citation.journal}}</div>
+  </div>
+<script>
+  $( document ).ajaxStart(function() {
+    $( "#loading" ).show();
+  });
+  $( document ).ajaxComplete(function() {
+    $( "#loading" ).hide();
+  });
+  function processAJAX(data, status, XHR){
+    $.each(['bsa', 'bmi'], function(index, value) {
+        //for each measurement input, get the id and update the results from the returned data
+
+        if (data[value]) {
+          $('#'+ value).val(data[value].toFixed(2));
+
+        }
+    });
+
+    if (data.sites) {
+      $.each($('.measurement'), function(index, value) {
+        //for each measurement input, get the id and update the results from the returned data
+        var id = $(this).attr('id');
+        if (data.sites[id]) {
+          var site = data.sites[id];
+          $('#'+ id + '-zscore').html(site.zscore.toFixed(2));
+          $('#'+ id + '-range')
+          .html(site.lln.toFixed(2) + ' - ' + site.uln.toFixed(2))
+          .attr('title', 'mean: '+ site.mean.toFixed(2));
+        } else {
+          $('#'+ id + '-zscore').html('');
+          $('#'+ id + '-range')
+          .html('')
+          .attr('title', '');
+        }
+      });
+    }
+    if (data['bmiz'] != 'N/A') {
+        $('#bmiz').val(data['bmiz'].toFixed(2));
+        $('.bmi-z').show();
+        $('.bmi-z.notice').hide()
+    } else {
+        $('#bmiz').val('');
+        $('.bmi-z').hide();
+        $('.bmi-z.notice').show();
+    }
+    // show/hide the derived calcs
+    //['bmiAtCentile', 'correctedWt']
+    if (data['bmiAtCentile'] != 'N/A') {
+        $('#bmiAtCentile').text(data['bmiAtCentile'].toFixed(2));
+        $('#correctedWt').val(data['correctedWt'].toFixed(2));
+        $('.bmi-derived').show();
+    } else {
+        $('.bmi-derived').hide();
+    }
+}
+
+  function sendAJAX(){
+    $.ajax({
+      dataType: "json",
+      url: $( "form" ).attr('action'),
+      data: $( "form" ).serialize(),
+      success: processAJAX,
+      error: function(e){
+        console.log(e);
+      }
+    });
+    return;
+  }
+
+  //calculate the age
+  $('.age').change(function (){
+      //set the hidden input #age to age in years from the variable input
+      var age;
+      if ($('#ageVal') && $('#ageModifier')) {
+          switch ($('#ageModifier').val()) {
+              case 'd':
+                  age = $('#ageVal').val() / 365;
+                  break;
+              case 'w':
+                  age = $('#ageVal').val() / 52;
+                  break;
+              case 'm':
+                  age = $('#ageVal').val() / 12;
+                  break;
+              default:
+                  // also case 'y':
+                  age = $('#ageVal').val();
+          }
+          $('#age').val(age);
+      }
+  });
+
+  $('.demog, .measurement').change(function(){
+    //store to sessionStorage
+    setStorage(this);
+    //and do the AJAX
+    sendAJAX();
+  });
+
+
+  $( "form" ).submit( function( event ) {
+    sendAJAX();
+    event.preventDefault();
+  });
+
+  $(document).ready(function() {
+    //when the page loads, pull values from sessionStorage
+    $.each($('.demog, .measurement'), function () {
+        getStorage(this.id);
+    });
+    //update the age
+    $('.age').change();
+    // hide the alternate analysis bits
+    $('.bmi-derived').hide();
+    //send form data to server (AJAX)
+    sendAJAX();
+
+  });
+</script>
+{% endblock %}

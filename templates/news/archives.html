@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block page %}
+  <h1>Welcome to The Archives</h1>
+  {% for article in articles %}
+    <h1><a href="{{ article.url }}">{{ article.meta.title }}</a></h1>
+  {% endfor %}
+{% endblock %}
