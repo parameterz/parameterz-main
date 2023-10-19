@@ -647,6 +647,9 @@ padding-right: 15px;
 background: url("/static/img/pubmed.png") no-repeat scroll right top transparent;
 }
 
+#movingSoon a {
+  color: #fc0;
+}
 
 p {
   line-height: 1.5em;
