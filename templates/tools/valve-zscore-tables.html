@@ -1,0 +1,170 @@
+{% extends "tools/base.html" %}
+
+{% block article %}
+
+{% filter markdown %}
+##Valve Z-Score Tables
+###Data tables presenting a range of valve sizes and corresponding "PHN" z-scores
+{% endfilter %}
+<div class="unit one-third">
+    <div><label for="ht">Height (cm):</label></div>
+</div>
+<div class="unit two-thirds">
+    <div><input class="ztableInput" id="ht" name="ht" type="number"/></div>
+</div>
+<div class="unit one-third">
+    <div><label for="wt">Weight (kg):</label></div>
+</div>
+<div class="unit two-thirds">
+    <div><input class="ztableInput" id="wt" name="wt" type="number"/></div>
+</div>
+<div class="unit one-third">
+    BSA (Haycock):
+</div>
+<div class="unit two-thirds">
+    <span id="bsa"></span> m<sup>2</sup>
+</div>
+
+<div class="unit one-third">
+    <div><label for="valve">Valve:</label></div>
+</div>
+<div class="unit two-thirds">
+    <select class="ztableInput" id="valve" name="valve">
+                <option value="mv" selected="selected">Mitral</option>
+                <option value="tv">Tricuspid</option>
+                <option value="aov">Aortic</option>
+                <option value="pv">Pulmonic</option>
+            </select>
+</div>
+<div class="unit one-third">
+    Mean for this BSA:
+</div>
+<div class="unit two-thirds">
+    <span id="mean"></span> mm
+</div>
+
+<div class="clear"> </div>
+<div class="unit whole">
+<table class="lookupTable" summary="cardiac valve z-score calculator">
+    <tbody>
+        <thead>
+            <th>Measured</th>
+            <th>Z-Score</th>
+        </thead>
+        {% for i in range(40) %}
+        <tr>
+            <td>{{ i+1 }} mm</td>
+            <td id="{{ i+1 }}">&nbsp;</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<script  type="text/javascript">
+    //use JQuery to update the BSA as ht/wt are entered
+    //then calculate and write the zscores for the selected valve
+    function calculateZscores(){
+        var ht, wt, bsa, _mean, _exp, _sd, score, zscore, values;
+        const data = {
+            'mv': { 'exp': 0.50, 'mean': 2.23, 'sd': 0.22 },
+            'tv': { 'exp': 0.50, 'mean': 2.36, 'sd': 0.29 },
+            'aov': { 'exp': 0.50, 'mean': 1.48, 'sd': 0.14 },
+            'pv': { 'exp': 0.50, 'mean': 1.91, 'sd': 0.24 }
+        };
+        values = data[$('#valve').val()];
+        ht = parseFloat( $('#ht').val() );
+        wt = parseFloat( $('#wt').val() ); 
+        //if ht and wt are not zero calc BSA
+        if(ht > 0 && wt > 0){
+            bsa = 0.024265 * Math.pow(ht, 0.3964) * Math.pow(wt, 0.5378);
+            $('#bsa').html(bsa.toFixed(2));
+        } else {
+            $('#bsa').html('');
+        }
+        if (bsa){
+            //calculate the mean valve dimension for this pt
+            _mean = values['mean'];
+            _exp = values['exp'];
+            _sd = values['sd']
+            mean = _mean * Math.pow(bsa, _exp);
+            $('#mean').html((10 * mean).toFixed(1));
+            //calculate the zscores for the range
+
+            for (let step = 1; step < 41; step++) {
+                score = (0.1 * step)/Math.pow(bsa, _exp);
+                zscore = ( score - _mean ) / _sd;
+                $('#'+ step ).text(zscore.toFixed(1));
+                //style the cells based on the zscore
+                var row = $('#'+ step ).closest('tr');
+                let colorValue = numberToColorHSL(Math.abs(zscore * 10));
+                row.css('background-color', colorValue);
+                if (Math.abs(zscore)< 2){
+                    row.css('font-weight', 'bold');
+                } else {
+                    row.css('font-weight', 'normal');
+                }
+
+        }
+            
+        }
+
+    }
+    // chatGPT helper
+    function numberToColorHSL(value) {
+  // Ensure the value is within the range [0, 100]
+  value = Math.min(100, Math.max(0, value));
+
+  // Calculate the hue (H) based on the value, where 0 is green (120 degrees) and 100 is red (0 degrees).
+  const hue = (1 - value / 100) * 120;
+
+  // Convert HSL to RGB
+  const h = hue / 60;
+  const c = 1;
+  const x = 1 - Math.abs(h % 2 - 1);
+  const m = 0;
+
+  let r, g, b;
+  if (h >= 0 && h < 1) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (h >= 1 && h < 2) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (h >= 2 && h < 3) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (h >= 3 && h < 4) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (h >= 4 && h < 5) {
+    r = x;
+    g = 0;
+    b = c;
+  } else {
+    r = c;
+    g = 0;
+    b = x;
+  }
+
+  // Adjust RGB values and convert to hexadecimal
+  r = Math.floor((r + m) * 255).toString(16);
+  g = Math.floor((g + m) * 255).toString(16);
+  b = Math.floor((b + m) * 255).toString(16);
+
+  // Ensure two characters for each component
+  r = r.length === 1 ? '0' + r : r;
+  g = g.length === 1 ? '0' + g : g;
+  b = b.length === 1 ? '0' + b : b;
+
+  // Return the RGB color as a string
+  return `#${r}${g}${b}`;
+}
+    $('.ztableInput').change(function() {
+        calculateZscores();
+    });
+</script>
+{% endblock %}

@@ -106,6 +106,13 @@ class CVProfileToolHandler(views.BaseHandler):
                             nav = TOOLS,
                             current_page = "chop-fetal-cv-profile")
 
+class ValveTablesHandler(views.BaseHandler):
+    def get(self):
+        self.render_template('/tools/valve-zscore-tables.html',
+                             page = {"title": "Tools: Valve Z-Score Tables",
+                                     "description": "Z-Score Tables for various valve dimensions"},
+                                     nav = TOOLS,
+                                     current_page = "valve-zscore-tables")
             
 def calcHaycock(ht, wt):
     return 0.024265 * math.pow(float(ht), 0.3964) * math.pow(float(wt), 0.5378)
@@ -135,6 +142,11 @@ TOOLS = {
         'title': 'Fetal CV Profile Score',
         'description': 'The CHOP fetal CV Profile Score',
         'intro': 'Fetal CV Profile score, esp. for use with TTTS'
+    },
+    'valve-zscore-tables': {
+        'title': 'Valve Z-Score Tables',
+        'description': 'Z-Score tables for MV, TV, Aov, PV',
+        'intro': 'Surgeons find this presentation helpful'
     }
     
 }

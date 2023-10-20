@@ -60,6 +60,7 @@ _routes = [
     (RedirectRoute(r'/tools/coronary-artery-smackdown', handler=tools.CASmackdownHandler, strict_slash=True, name="CA smackdown tool")),
     (RedirectRoute(r'/tools/chart-data', handler=tools.CAChartHandler, strict_slash=True, name='CA Chart Data')),
     (RedirectRoute(r'/tools/chop-fetal-cv-profile', handler=tools.CVProfileToolHandler, strict_slash=True, name="CV Profile Score tool")),
+    (RedirectRoute(r'/tools/valve-zscore-tables', handler=tools.ValveTablesHandler, strict_slash=True, name='Valve Z-Score Tables')),
     (RedirectRoute(r'/methods', handler=echo.MethodsHandler, strict_slash=True, name="methods")),
     (RedirectRoute(r'/disclaimer', handler=views.disclaimerHandler, strict_slash=True, name="disclaimer")),
     (RedirectRoute(r'/about', handler=views.AboutHandler, strict_slash=True, name="about")),
